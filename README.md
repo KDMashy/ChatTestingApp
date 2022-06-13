@@ -23,4 +23,4 @@ php artisan serve
 
 | Documentation |
 | ------------- |
-| (Wiki)[https://github.com/KDMashy/ChatTestingApp_MASHY/wiki] |
+| [Wiki](https://github.com/KDMashy/ChatTestingApp_MASHY/wiki) |
