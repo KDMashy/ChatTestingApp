@@ -1,0 +1,46 @@
+* {
+    margin: 0 auto;
+    padding: 0 auto;
+    text-decoration: none;
+    list-style-type: none;
+}
+
+.contactRow {
+    width: 90%;
+    margin: 2% auto;
+    display: flex;
+}
+
+.contactRow button {
+    width: 90%;
+    font-size: 130%;
+    border: none;
+    padding: 5% 0;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background-color: #555;
+    color: #fff;
+    text-shadow: 2px 2px #999;
+    transition: background 0.3s, color 0.3s, text-shadow 0.3s;
+}
+
+.contactRow button:hover {
+    background-color: #fff;
+    color: #000;
+    text-shadow: 2px 2px #ccc;
+}
+
+.contactRow .readed,
+.contactRow .unreaded {
+    width: 10%;
+    border-top-right-radius: 40px;
+    border-bottom-right-radius: 40px;
+}
+
+.contactRow .readed {
+    background-color: rgba(0, 255, 21, 0.445);
+}
+
+.contactRow .unreaded {
+    background-color: rgba(255, 0, 0, 0.438);
+}
