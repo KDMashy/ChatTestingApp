@@ -17,6 +17,7 @@ function Index() {
     });
 
     const [message, setMessage] = useState<string>('');
+    const [loginMessage, setLoginMessage] = useState<string>('');
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -81,20 +82,24 @@ function Index() {
             (registerUser.email && registerUser.email.length > 0) &&
             (registerUser.password && registerUser.password.length > 5)
         ) {
-            const resp = await axios.post('http://127.0.0.1:8000/api/auth/register', {
-                name: registerUser.name,
-                email: registerUser.email,
-                password: registerUser.password
-            });
+            try {
+                const resp = await axios.post('http://127.0.0.1:8000/api/auth/register', {
+                    name: registerUser.name,
+                    email: registerUser.email,
+                    password: registerUser.password
+                });
 
-            if(resp) {
-                let firstSplit = JSON.stringify(resp.data).replace('}', '').split(':');
-                let token = firstSplit[1].split(',');
-                localStorage.setItem('token', token[0].replaceAll('"', ''));
-                localStorage.setItem('loggedIn', 'true');
+                if(resp) {
+                    let firstSplit = JSON.stringify(resp.data).replace('}', '').split(':');
+                    let token = firstSplit[1].split(',');
+                    localStorage.setItem('token', token[0].replaceAll('"', ''));
+                    localStorage.setItem('loggedIn', 'true');
+                }
+
+                window.location.replace("http://localhost:3000/chat");
+            } catch(err) {
+                setMessage('User already exists, or the given data for registration is invalid, email must be unique')
             }
-
-            window.location.replace("http://localhost:3000/chat");
         }
     }
 
@@ -109,18 +114,22 @@ function Index() {
             loginUser.name.length > 0 &&
             (loginUser.password && loginUser.password.length > 5)
         ) {
-            const resp: any = await axios.post('http://127.0.0.1:8000/api/auth/login', {
-                name: loginUser.name,
-                password: loginUser.password
-            });
+            try{
+                const resp: any = await axios.post('http://127.0.0.1:8000/api/auth/login', {
+                    name: loginUser.name,
+                    password: loginUser.password
+                });
 
-            if(resp){
-                let firstSplit = JSON.stringify(resp.data).replace('}', '').split(':');
-                let token = firstSplit[1].split(',');
-                localStorage.setItem('token', token[0].replaceAll('"', ''));
-                localStorage.setItem('loggedIn', 'true');
+                if(resp){
+                    let firstSplit = JSON.stringify(resp.data).replace('}', '').split(':');
+                    let token = firstSplit[1].split(',');
+                    localStorage.setItem('token', token[0].replaceAll('"', ''));
+                    localStorage.setItem('loggedIn', 'true');
 
-                window.location.replace("http://localhost:3000/chat");
+                    window.location.replace("http://localhost:3000/chat");
+                }
+            } catch(err){
+                setLoginMessage('Username or password is invalid');
             }
         }
     }
@@ -146,7 +155,7 @@ function Index() {
                         placeholder='password'
                         minLength={6}
                         onChange={(evt) => update(evt)} />
-                    <p style={{color: 'red', fontSize: '125%', fontWeight: 'bold'}}>{message}</p>
+                    <p style={{color: 'turquoise', fontSize: '125%', fontWeight: 'bold', marginBottom: '2%'}}>{message}</p>
                     <button>Register</button>
                 </form>
             </div>
@@ -164,6 +173,7 @@ function Index() {
                         placeholder='password'
                         minLength={6}
                         onChange={(evt) => update(evt)}/>
+                    <p style={{color: 'turquoise', fontSize: '125%', fontWeight: 'bold', marginBottom: '2%'}}>{loginMessage}</p>
                     <button>Login</button>
                 </form>
             </div>

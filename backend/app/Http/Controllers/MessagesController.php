@@ -64,8 +64,10 @@ class MessagesController extends Controller
      * Set new message readed on being seen
      */
     public function seenCheck() {
-        $newMessages = NewMessages::where('receiver',$this->getAuthUserName())
-            ->where('sender', request()->get('name'))
+        $newMessages = NewMessages::where([
+                ['sender', request()->get('name')],
+                ['receiver', $this->getAuthUserName()]
+            ])
             ->get();
 
         foreach($newMessages as $message){
@@ -96,11 +98,27 @@ class MessagesController extends Controller
             ->get();
     }
 
+    private function messageCache() {
+        return Cache::remember('message-cache', 60, function() {
+            return $this->messagesQuery();
+        });
+    }
+
     public function getMessages() {
         /**
          * Get readed messages
          */
-        $read = $this->messagesQuery();
+        $read = '';
+        if(Cache::get('message-cache') &&
+         Cache::get('cached-user') == request()->get('name')){
+            $read = Cache::get('message-cache');
+        } else {
+            $read = $this->messagesQuery();
+            $this->messageCache();
+            Cache::remember('cached-user', 60, function() {
+                return request()->get('name');
+            });
+        }
 
         /**
          * Get new messages
@@ -121,7 +139,10 @@ class MessagesController extends Controller
         if(count($unreaded) > 0){
             $this->seenCheck();
 
-            if(count($sent) > 0){
+            Cache::forget('message-cache');
+            $this->messageCache();
+
+            if(count($sent) > 0 && $this->getAuthUserName() != request()->get('name')){
                 return response()->json([
                     'readed' => $read,
                     'unreaded' => $unreaded,
@@ -135,7 +156,7 @@ class MessagesController extends Controller
             }
         }
 
-        if(count($sent) > 0){
+        if(count($sent) > 0 && $this->getAuthUserName() != request()->get('name')){
             return response()->json([
                 'readed' => $read,
                 'sent' => $sent
