@@ -2,6 +2,7 @@ import axios from 'axios';
 import { ChangeEvent, useEffect, useState } from 'react'
 import Contacts from '../components/Contacts';
 import Message from '../components/Message';
+import { ChatUtils } from '../functions/UtilFunctions';
 import { ICreateUser } from '../interfaces/I.CreateUser';
 import { IMessageDto } from '../interfaces/I.Message.dto';
 import '../styles/Chats.css'
@@ -142,28 +143,6 @@ function Chats() {
   }
 
   /**
-   * 
-   * @param collection generic for the lists that is in response
-   * @param list List to fill up
-   * @returns list of messages
-   */
-  const loadMessages = (collection: any, list: any) => {
-    collection.forEach((item: any) => {
-      let newMessage = {
-        sender: item.sender,
-        receiver: item.receiver,
-        message: item.message,
-        side: false
-      };
-      if(item.sender === loginName){
-        newMessage.side = true;
-      }
-      list.push(newMessage);
-    });
-    return list;
-  }
-
-  /**
    * Sends request to server and get messages by sender-receiver
    */
   const getMessages = async () => {
@@ -177,15 +156,15 @@ function Chats() {
     let messagesList: any = [];
 
     if(receivedMessages.readed){
-      messagesList = loadMessages(receivedMessages.readed, messagesList);
+      messagesList = ChatUtils.loadMessages(receivedMessages.readed, messagesList, loginName);
     }
 
     if(receivedMessages.unreaded){
-      messagesList = loadMessages(receivedMessages.unreaded, messagesList);
+      messagesList = ChatUtils.loadMessages(receivedMessages.unreaded, messagesList, loginName);
     }
 
     if(receivedMessages.sent){
-      messagesList = loadMessages(receivedMessages.sent, messagesList);
+      messagesList = ChatUtils.loadMessages(receivedMessages.sent, messagesList, loginName);
     }
     if(messagesList.length != messages.length){
       setMessages(messagesList);
@@ -261,9 +240,6 @@ function Chats() {
   const updateView = () => {
     if(messages.length > 0){
       document.getElementsByClassName('showMessage')[0].scrollTop = document.getElementsByClassName('showMessage')[0].scrollHeight
-    }
-    if(messages.length > 0){
-      document.getElementsByClassName('list')[0].scrollTop = document.getElementsByClassName('list')[0].scrollHeight
     }
   }
 
