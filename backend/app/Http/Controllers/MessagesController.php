@@ -83,11 +83,8 @@ class MessagesController extends Controller
         ]);
     }
 
-    public function getMessages() {
-        /**
-         * Get readed messages
-         */
-        $read = Messages::select('created_at','sender','receiver','message')
+    private function messagesQuery() {
+        return  Messages::select('created_at','sender','receiver','message')
             ->where([
                 ['sender', $this->getAuthUserName()],
                 ['receiver', request()->get('name')]
@@ -97,6 +94,13 @@ class MessagesController extends Controller
                 ['receiver', $this->getAuthUserName()]
             ])
             ->get();
+    }
+
+    public function getMessages() {
+        /**
+         * Get readed messages
+         */
+        $read = $this->messagesQuery();
 
         /**
          * Get new messages
@@ -117,11 +121,18 @@ class MessagesController extends Controller
         if(count($unreaded) > 0){
             $this->seenCheck();
 
-            return response()->json([
-                'readed' => $read,
-                'unreaded' => $unreaded,
-                'sent' => $sent
-            ]);
+            if(count($sent) > 0){
+                return response()->json([
+                    'readed' => $read,
+                    'unreaded' => $unreaded,
+                    'sent' => $sent
+                ]);
+            } else {
+                return response()->json([
+                    'readed' => $read,
+                    'unreaded' => $unreaded
+                ]);
+            }
         }
 
         if(count($sent) > 0){
