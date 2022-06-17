@@ -1,4 +1,4 @@
-# ChatTestApp_MASHY
+# ChatTestApp
  Chat test app
 
 # React
