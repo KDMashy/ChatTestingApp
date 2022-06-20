@@ -13,5 +13,7 @@ class Messages extends Model
         'sender',
         'receiver',
         'message',
+        'sent_date',
+        'edited',
     ];
 }

@@ -13,13 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('new_messages', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-            $table->string('sender');
-            $table->string('receiver');
-            $table->string('message');
-            $table->string('sent_date');
+        Schema::table('messages', function (Blueprint $table) {
+            $table->integer('edited')->default(0);
         });
     }
 
@@ -30,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('new_messages');
+        Schema::table('messages', function (Blueprint $table) {
+            $table->dropColumn('edited');
+        });
     }
 };

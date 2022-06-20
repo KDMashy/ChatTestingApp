@@ -47,25 +47,27 @@
     overflow-y: scroll;
 }
 
-.sentMessage {
+.sentMessage,
+.receivedMessage {
+    position: relative;
     max-width: 40%;
-    text-align: justify;
+    min-width: 20%;
     padding: 20px;
-    background-color: rgb(181, 170, 230);
-    margin: 1% 10% 2% 0;
-    float: right;
     clear: both;
     border-radius: 15px;
 }
 
+.sentMessage {
+    text-align: justify;
+    background-color: rgb(181, 170, 230);
+    margin: 1% 10% 2% 0;
+    float: right;
+}
+
 .receivedMessage {
-    max-width: 40%;
-    padding: 20px;
     background-color: #fff;
     margin: 0 0 3% 10%;
     float: left;
-    clear: both;
-    border-radius: 15px;
 }
 
 .sentMessage p,
@@ -89,18 +91,27 @@
     font-size: 150%;
 }
 
-.sentMessage h3 {
+.sentMessage h5,
+.receivedMessage h5 {
+    padding: 5px 0;
+    font-size: 90%;
+    float: right;
+}
+
+.sentMessage h3,
+.sentMessage h5 {
     color: #fff;
     text-shadow: 2px 2px rgba(0, 0, 0, 0.308);
 }
 
-.receivedMessage h3 {
+.receivedMessage h3,
+.receivedMessage h5 {
     text-shadow: 1px 1px #333;
 }
 
 .sendMessage form {
     display: flex;
-    padding: 3% 0;
+    padding: 2% 0;
 }
 
 .sendMessage textarea {
@@ -112,9 +123,76 @@
     resize: none;
 }
 
+#messageToUpdate {
+    height: 100%;
+    padding: 3%;
+    width: 90%;
+    font-size: 130%;
+    text-align: justify;
+    resize: none;
+    float: right;
+}
+
+.sentMessage .options {
+    width: 90%;
+    float: right;
+    padding: 5% 0;
+    flex-direction: column;
+}
+
+#messageUpdateButton,
+#deleteMessageButton {
+    padding: 3% 5%;
+    margin-top: 5%;
+    border-radius: 10px;
+    font-size: 130%;
+    font-weight: bold;
+    float: right;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    text-shadow: 1px 1px #aaa;
+    transition: background 0.3s, color 0.3s, text-shadow 0.3s;
+}
+
 .sendMessage div {
     width: 10%;
     padding: 1% 0;
+}
+
+.message {
+    float: right;
+    width: 90%;
+}
+
+.icons  {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: 35px;
+    left: 2%;
+    top: 5%;
+}
+
+.icon {
+    display: block;
+    width: 25px;
+    height: 50px;
+    overflow: hidden;
+    transition: width 0.3s;
+}
+
+.sentMessage .icon {
+    filter: invert(100%) saturate(100%) brightness(118%);
+}
+
+.receivedMessage .icon {
+    display: none;
+}
+
+.icon:hover {
+    width: 35px;
+    cursor: pointer;
 }
 
 .sendMessage button,
@@ -134,8 +212,22 @@
     padding: 15%;
 }
 
+.sendMessage #chatPartner {
+    width: 100%;
+    margin: 0%;
+    padding: 0;
+}
+
+#chatPartner h2 {
+    color: #fff;
+    text-shadow: 2px 2px #444;
+    padding: 0 10%;
+}
+
 .logout button:hover,
-.sendMessage button:hover {
+.sendMessage button:hover,
+#messageUpdateButton:hover,
+#deleteMessageButton:hover {
     background-color: #eee;
     color: #000;
     text-shadow: 1px 1px #ccc;

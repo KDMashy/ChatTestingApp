@@ -22,12 +22,19 @@ Route::group([
 
 ], function ($router) {
 
+    // Messages
+
     Route::get('chats', 'MessagesController@getUnreadedShow');
     Route::get('users', 'MessagesController@getUsersToChat');
     Route::get('name', 'MessagesController@getAuthUserName');
 
     Route::post('messages', 'MessagesController@getMessages');
     Route::post('send', 'MessagesController@sendMessage');
+    Route::post('delete', 'MessagesController@deleteMessage');
+
+    Route::put('edit', 'MessagesController@editMessage');
+
+    //Authentication
 
     Route::post('register', 'AuthController@register');
     Route::post('login', 'AuthController@login');

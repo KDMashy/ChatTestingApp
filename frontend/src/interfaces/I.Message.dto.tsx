@@ -1,7 +1,10 @@
 export interface IMessageDto {
-    created_at?: string,
+    id: number,
     sender: string,
     receiver: string,
     message: string,
+    sent_date: string,
+    edited: number,
+    sent?:boolean,
     side?:boolean
 }

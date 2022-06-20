@@ -13,5 +13,6 @@ class NewMessages extends Model
         'sender',
         'receiver',
         'message',
+        'sent_date',
     ];
 }

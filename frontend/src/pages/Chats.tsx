@@ -57,6 +57,8 @@ function Chats() {
   const showMessages = () => {
     const textarea = document.getElementById('messageField');
     const sendButton = document.getElementById('sendButton');
+    const chatPartner = document.getElementById('chatPartner');
+
     if(openedChat){
       if(textarea){
         textarea.style.display = 'inherit'
@@ -64,6 +66,10 @@ function Chats() {
 
       if(sendButton){
         sendButton.style.display = 'inherit'
+      }
+
+      if(chatPartner){
+        chatPartner.style.display = 'inherit'
       }
 
       return messages.map((message: IMessageDto, key: number) => {
@@ -76,6 +82,10 @@ function Chats() {
 
       if(sendButton){
         sendButton.style.display = 'none'
+      }
+
+      if(chatPartner){
+        chatPartner.style.display = 'none'
       }
 
       return (
@@ -156,15 +166,11 @@ function Chats() {
     let messagesList: any = [];
 
     if(receivedMessages.readed){
-      messagesList = ChatUtils.loadMessages(receivedMessages.readed, messagesList, loginName);
-    }
-
-    if(receivedMessages.unreaded){
-      messagesList = ChatUtils.loadMessages(receivedMessages.unreaded, messagesList, loginName);
+      messagesList = ChatUtils.loadMessages(receivedMessages.readed, messagesList, loginName, 'nope');
     }
 
     if(receivedMessages.sent){
-      messagesList = ChatUtils.loadMessages(receivedMessages.sent, messagesList, loginName);
+      messagesList = ChatUtils.loadMessages(receivedMessages.sent, messagesList, loginName, 'sent');
     }
     if(messagesList.length != messages.length){
       setMessages(messagesList);
@@ -269,7 +275,7 @@ function Chats() {
       const interval = setInterval(async () => {
         await getMessages();
         await getUnreadedOnUpdate();
-      }, 2000);
+      }, 3000);
   
       return () => clearInterval(interval);
     }
@@ -296,6 +302,9 @@ function Chats() {
               {showMessages()}
             </div>
             <div className="sendMessage">
+              <div id="chatPartner">
+                <h2>Your chat partner: {openedName}</h2>
+              </div>
               <form onSubmit={(evt) => sendMessage(evt)}>
                 <textarea
                   id='messageField'

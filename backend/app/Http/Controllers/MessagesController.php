@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-
+use App\MessageFunctions\MessageFunctions;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Messages;
 use App\Models\NewMessages;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Cache;
-use stdClass;
 
 class MessagesController extends Controller
 {
@@ -53,10 +52,36 @@ class MessagesController extends Controller
             'sender' => $this->getAuthUserName(),
             'receiver' => request()->get('receiver'),
             'message' => request()->get("message"),
+            'sent_date' => date('h:i:sa'),
         ]);
 
         return response()->json([
             'sentMessage' => $message,
+        ]);
+    }
+
+    public function editMessage() {
+        Messages::where('id', request()->get('edited'))
+            ->update([
+                'edited' => 1,
+                'message' => request()->get('message')
+            ]);
+
+        Cache::forget('message-cache');
+
+        return response()->json([
+            'edited' => 'Successfully updated',
+        ]);
+    }
+
+    public function deleteMessage() {
+        Messages::where('id', request()->get('id'))
+            ->delete();
+
+        Cache::forget('message-cache');
+
+        return response()->json([
+            'deleted' => 'Successfully deleted',
         ]);
     }
 
@@ -74,7 +99,8 @@ class MessagesController extends Controller
             Messages::create([
                 'sender' => $message->sender,
                 'receiver' => $message->receiver,
-                'message' => $message->message
+                'message' => $message->message,
+                'sent_date' => $message->sent_date,
             ]);
 
             NewMessages::where('id', $message->id)->delete();
@@ -86,7 +112,7 @@ class MessagesController extends Controller
     }
 
     private function messagesQuery() {
-        return  Messages::select('created_at','sender','receiver','message')
+        return  Messages::select('id','sender','receiver','message','sent_date','edited')
             ->where([
                 ['sender', $this->getAuthUserName()],
                 ['receiver', request()->get('name')]
@@ -123,12 +149,12 @@ class MessagesController extends Controller
         /**
          * Get new messages
          */
-        $unreaded = NewMessages::select('created_at','sender','receiver','message')
+        $unreaded = NewMessages::select('id','sender','receiver','message','sent_date')
             ->where('receiver', $this->getAuthUserName())
             ->where('sender', request()->get('name'))
             ->get();
 
-        $sent = NewMessages::select('created_at','sender','receiver','message')
+        $sent = NewMessages::select('id','sender','receiver','message','sent_date')
             ->where('sender', $this->getAuthUserName())
             ->where('receiver', request()->get('name'))
             ->get();
@@ -140,18 +166,12 @@ class MessagesController extends Controller
             $this->seenCheck();
 
             Cache::forget('message-cache');
-            $this->messageCache();
+            $read = $this->messageCache();
 
             if(count($sent) > 0 && $this->getAuthUserName() != request()->get('name')){
                 return response()->json([
                     'readed' => $read,
-                    'unreaded' => $unreaded,
                     'sent' => $sent
-                ]);
-            } else {
-                return response()->json([
-                    'readed' => $read,
-                    'unreaded' => $unreaded
                 ]);
             }
         }

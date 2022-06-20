@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('sender');
             $table->string('receiver');
             $table->string('message');
+            $table->string('sent_date');
         });
     }
 
