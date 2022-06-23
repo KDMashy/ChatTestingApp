@@ -61,28 +61,49 @@ class MessagesController extends Controller
     }
 
     public function editMessage() {
-        Messages::where('id', request()->get('edited'))
-            ->update([
-                'edited' => 1,
-                'message' => request()->get('message')
+        if(request()->get('readed') == 0){
+            Messages::where('id', request()->get('edited'))
+                ->update([
+                    'edited' => 1,
+                    'message' => request()->get('message')
+                ]);
+
+            Cache::forget('message-cache');
+
+            return response()->json([
+                'edited' => 'Successfully updated',
             ]);
+        } else if(request()->get('readed') == 1){
+            NewMessages::where('id', request()->get('edited'))
+                ->update([
+                    'edited' => 1,
+                    'message' => request()->get('message')
+                ]);
 
-        Cache::forget('message-cache');
-
-        return response()->json([
-            'edited' => 'Successfully updated',
-        ]);
+            return response()->json([
+                'edited' => 'Successfully updated',
+            ]);
+        }
     }
 
     public function deleteMessage() {
-        Messages::where('id', request()->get('id'))
-            ->delete();
+        if(request()->get('readed') == 0){
+            Messages::where('id', request()->get('id'))
+                ->update(['deleted' => 1]);
 
-        Cache::forget('message-cache');
+            Cache::forget('message-cache');
 
-        return response()->json([
-            'deleted' => 'Successfully deleted',
-        ]);
+            return response()->json([
+                'changed' => 'Successfully hidden',
+            ]);
+        } else if(request()->get('readed') == 1){
+            NewMessages::where('id', request()->get('id'))
+            ->update(['deleted' => 1]);
+
+            return response()->json([
+                'changed' => 'Successfully hidden',
+            ]);
+        }
     }
 
     /**
@@ -112,7 +133,7 @@ class MessagesController extends Controller
     }
 
     private function messagesQuery() {
-        return  Messages::select('id','sender','receiver','message','sent_date','edited')
+        return  Messages::select('id','sender','receiver','message','sent_date','edited','deleted')
             ->where([
                 ['sender', $this->getAuthUserName()],
                 ['receiver', request()->get('name')]
@@ -149,12 +170,12 @@ class MessagesController extends Controller
         /**
          * Get new messages
          */
-        $unreaded = NewMessages::select('id','sender','receiver','message','sent_date')
+        $unreaded = NewMessages::select('id','sender','receiver','message','sent_date','edited','deleted')
             ->where('receiver', $this->getAuthUserName())
             ->where('sender', request()->get('name'))
             ->get();
 
-        $sent = NewMessages::select('id','sender','receiver','message','sent_date')
+        $sent = NewMessages::select('id','sender','receiver','message','sent_date','edited','deleted')
             ->where('sender', $this->getAuthUserName())
             ->where('receiver', request()->get('name'))
             ->get();

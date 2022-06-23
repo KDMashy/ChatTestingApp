@@ -5,6 +5,7 @@ export interface IMessageDto {
     message: string,
     sent_date: string,
     edited: number,
+    deleted: number,
     sent?:boolean,
     side?:boolean
 }

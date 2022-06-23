@@ -62,11 +62,11 @@ function Message({ message }: Props) {
   const deleteOption = async (evt: any) => {
     evt.preventDefault();
 
-    const resp = await axios.post('http://127.0.0.1:8000/api/auth/delete', {
-      id: message.id,
-    }, {
-      headers: {"Authorization": `Bearer ${token}`}
-    })
+    if(message.sent === false){
+      await deleteCall(0);
+    } else if(message.sent === true){
+      await deleteCall(1);
+    }
 
     let messageToDelete = document.getElementById('chatMessage'+message.id);
 
@@ -75,26 +75,50 @@ function Message({ message }: Props) {
     }
   }
 
-  const editMessageOption = async (evt: any) => {
-    evt.preventDefault();
-
-    const resp = await axios.put('http://127.0.0.1:8000/api/auth/edit', {
-      edited: message.id,
-      message: messageToUpdate
+  const deleteCall = async (readed: number) => {
+    const resp = await axios.post('http://127.0.0.1:8000/api/auth/delete', {
+      id: message.id,
+      readed: readed
     }, {
       headers: {"Authorization": `Bearer ${token}`}
     })
+  }
+
+  const editMessageOption = async (evt: any) => {
+    evt.preventDefault();
+
+    if(message.sent === false){
+      await editCall(0);
+    } else if(message.sent === true){
+      await editCall(1);
+    }
 
     let edit = document.getElementById('editMessage'+message.id);
     let original = document.getElementById('message'+message.id);
     let messageBox = document.getElementById('normalMessage'+message.id);
+    let messageDate = document.getElementById('sentDate'+message.id);
 
-    if(edit && original && messageBox){
+
+    if(edit && original && messageBox && messageDate){
       setEditMessage(false)
+
+      let date = messageDate.innerHTML;
+
       edit.style.display = 'none'
       original.style.display = 'block'
       messageBox.innerHTML = messageToUpdate;
+      messageDate.innerHTML = date + ' - edited';
     }
+  }
+
+  const editCall = async (readed: number) => {
+    const resp = await axios.put('http://127.0.0.1:8000/api/auth/edit', {
+      edited: message.id,
+      message: messageToUpdate,
+      readed: readed
+    }, {
+      headers: {"Authorization": `Bearer ${token}`}
+    })
   }
 
   const editedMessage = () => {
@@ -114,7 +138,14 @@ function Message({ message }: Props) {
   const update = (evt: ChangeEvent<HTMLTextAreaElement>) => {
     setMessageToUpdate(evt.target.value);
   }
-
+  
+  const showIfDeleted = () => {
+    if(message.deleted === 0) {
+      return <p id={'normalMessage'+message.id}>{message.message}</p>
+    } else {
+      return <p id={'normalMessage'+message.id}>The message was deleted</p>
+    }
+  }
   return (
     <div 
       className={message.side ? 'sentMessage' : 'receivedMessage'}
@@ -126,13 +157,13 @@ function Message({ message }: Props) {
           src={ChatOptions} 
           alt="chat-options-icon" 
           className='icon' 
-          style={message.sent ? {display: 'none'} : {display: 'inherit'}}
+          style={message.deleted === 0 ? {display: 'inherit'} : {display: 'none'}}
           onClick={() => openOptionsMenu()}/>
         <img 
           src={EditIcon} 
           alt="edit-icon" 
           className='icon'
-          style={message.sent ? {display: 'none'} : {display: 'inherit'}} 
+          style={message.deleted === 0 ? {display: 'inherit'} : {display: 'none'}}
           onClick={() => openEditingContainer()}/>
       </div>
       <div 
@@ -164,8 +195,8 @@ function Message({ message }: Props) {
       </div>
       <div className='message' id={'message'+message.id}>
           <h3>{message.sender}</h3>
-          <p id={'normalMessage'+message.id}>{message.message}</p>
-          <h5>{message.sent_date}{editedMessage()}</h5>
+          {showIfDeleted()}
+          <h5 id={'sentDate'+message.id}>{message.sent_date}{editedMessage()}</h5>
       </div>
     </div>
   )

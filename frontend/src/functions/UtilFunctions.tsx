@@ -14,6 +14,7 @@ export const ChatUtils = ({
         message: item.message,
         sent_date: item.sent_date,
         edited: item.edited,
+        deleted: item.deleted,
         sent: false,
         side: false
       };

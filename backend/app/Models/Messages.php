@@ -15,5 +15,6 @@ class Messages extends Model
         'message',
         'sent_date',
         'edited',
+        'deleted',
     ];
 }

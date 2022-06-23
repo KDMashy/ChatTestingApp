@@ -14,5 +14,7 @@ class NewMessages extends Model
         'receiver',
         'message',
         'sent_date',
+        'edited',
+        'deleted',
     ];
 }
