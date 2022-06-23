@@ -68,10 +68,16 @@ function Message({ message }: Props) {
       await deleteCall(1);
     }
 
-    let messageToDelete = document.getElementById('chatMessage'+message.id);
+    let messageBox = document.getElementById('normalMessage'+message.id);
+    let options = document.getElementById('optionsMenu'+message.id);
+    let original = document.getElementById('message'+message.id);
+    let icons = document.getElementById('chatOptionIcons'+message.id);
 
-    if(messageToDelete){
-      messageToDelete.style.display = 'none';
+    if(messageBox && options && original && icons){
+      messageBox.innerHTML = 'The message was deleted';
+      options.style.display = 'none'
+      original.style.display = 'block'
+      icons.style.display = 'none'
     }
   }
 
@@ -152,6 +158,7 @@ function Message({ message }: Props) {
       id={'chatMessage'+message.id}>
       <div 
         className='icons'
+        id={'chatOptionIcons'+message.id}
         style={message.side ? {display: 'inherit'} : {display: 'none'}}>
         <img 
           src={ChatOptions} 

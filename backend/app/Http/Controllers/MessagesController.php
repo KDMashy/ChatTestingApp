@@ -122,6 +122,8 @@ class MessagesController extends Controller
                 'receiver' => $message->receiver,
                 'message' => $message->message,
                 'sent_date' => $message->sent_date,
+                'edited' => $message->edited,
+                'deleted' => $message->deleted
             ]);
 
             NewMessages::where('id', $message->id)->delete();
